@@ -73,6 +73,17 @@ function makeSimpleStore(): SimpleStore {
       return all.slice(-limit);
     },
     bind(ev) {
+      // Initial bulk history sync — fires once after first connection
+      // chats.upsert / contacts.upsert only fire for incremental updates,
+      // so without this handler the store stays empty after the first connect.
+      ev.on("messaging-history.set", ({ chats: historicChats, contacts: historicContacts }) => {
+        for (const c of historicChats) {
+          if (c.id) chats.set(c.id, c as proto.IConversation);
+        }
+        for (const c of historicContacts) {
+          if (c.id) contacts[c.id] = { ...contacts[c.id], ...c };
+        }
+      });
       ev.on("chats.upsert", (newChats) => {
         for (const c of newChats) chats.set(c.id!, c);
       });
@@ -277,8 +288,10 @@ export class WhatsAppClient extends EventEmitter {
     this.socket.ev.on("creds.update", saveCreds);
 
     // Handle messages
+    // "notify" = inbound real-time message; "append" = outgoing message echoed back.
+    // Both need to be stored so whatsapp_get_message_history reflects sent messages too.
     this.socket.ev.on("messages.upsert", async ({ messages, type }) => {
-      if (type === "notify") {
+      if (type === "notify" || type === "append") {
         for (const message of messages) {
           const msgInfo = this.parseMessage(message);
           if (msgInfo) {
@@ -918,13 +931,10 @@ export class WhatsAppClient extends EventEmitter {
 
   async getJoinedGroups(): Promise<any[]> {
     this.ensureConnected();
-    const groups: any[] = [];
-    for (const chat of this.store.chats.values()) {
-      if ((chat as any).id?.endsWith("@g.us")) {
-        groups.push(chat);
-      }
-    }
-    return groups;
+    // groupFetchAllParticipating() makes a live request — always returns current
+    // groups regardless of whether the history sync has populated the local store.
+    const groupMap = await this.socket!.groupFetchAllParticipating();
+    return Object.values(groupMap);
   }
 
   // ===== CONTACT MANAGEMENT =====
@@ -952,17 +962,40 @@ export class WhatsAppClient extends EventEmitter {
     const normalizedJid = this.normalizeJid(jid);
     const contact = this.store.contacts[normalizedJid];
 
-    if (!contact) return null;
+    if (contact) {
+      return {
+        id: normalizedJid,
+        name: contact.name || contact.notify || normalizedJid,
+        pushName: contact.notify,
+        number: normalizedJid
+          .replace("@s.whatsapp.net", "")
+          .replace("@g.us", ""),
+        isGroup: normalizedJid.endsWith("@g.us"),
+      };
+    }
 
-    return {
-      id: normalizedJid,
-      name: contact.name || contact.notify || normalizedJid,
-      pushName: contact.notify,
-      number: normalizedJid
+    // Store not populated yet — fall back to a live onWhatsApp lookup
+    // so the tool works even before history sync completes.
+    try {
+      const phone = normalizedJid
         .replace("@s.whatsapp.net", "")
-        .replace("@g.us", ""),
-      isGroup: normalizedJid.endsWith("@g.us"),
-    };
+        .replace("@g.us", "");
+      const results = await this.socket!.onWhatsApp(phone);
+      if (results?.[0]?.exists === true) {
+        const liveJid = results[0].jid ?? normalizedJid;
+        return {
+          id: liveJid,
+          name: liveJid.replace("@s.whatsapp.net", ""),
+          pushName: undefined,
+          number: liveJid.replace("@s.whatsapp.net", ""),
+          isGroup: false,
+        };
+      }
+    } catch {
+      // ignore — fall through to null
+    }
+
+    return null;
   }
 
   async blockContact(jid: string): Promise<void> {
@@ -1009,7 +1042,7 @@ export class WhatsAppClient extends EventEmitter {
     try {
       // onWhatsApp returns { jid, exists }[] | undefined in newer Baileys
       const results = await this.socket!.onWhatsApp(phone);
-      return results?.[0]?.exists || false;
+      return results?.[0]?.exists === true;
     } catch {
       return false;
     }
