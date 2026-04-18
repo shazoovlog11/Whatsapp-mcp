@@ -126,38 +126,36 @@ function buildGuide(host: string, toolCount: number): object {
 
 // ── Quick tool list (static — doesn't require a live MCP session) ─────────────
 
+// Canonical tool name list — must stay in sync with src/tools/*.ts registrations.
+// Run `tools/list` via the MCP protocol for full schemas.
 const TOOL_QUICK_LIST = [
-  // messaging
+  // messaging (16)
   "whatsapp_send_message", "whatsapp_send_image", "whatsapp_send_video",
   "whatsapp_send_audio", "whatsapp_send_document", "whatsapp_send_location",
-  "whatsapp_send_contact_card", "whatsapp_send_reaction", "whatsapp_send_poll",
-  "whatsapp_send_sticker", "whatsapp_reply_to_message",
-  "whatsapp_send_button_message", "whatsapp_send_list_message",
-  "whatsapp_forward_message", "whatsapp_delete_message",
-  "whatsapp_mark_as_read", "whatsapp_send_typing",
-  // chat management
-  "whatsapp_get_chats", "whatsapp_get_chat_messages",
-  "whatsapp_archive_chat", "whatsapp_mute_chat",
-  "whatsapp_pin_chat", "whatsapp_clear_chat",
-  // groups
+  "whatsapp_send_contact", "whatsapp_send_reaction", "whatsapp_reply_message",
+  "whatsapp_send_buttons", "whatsapp_send_list",
+  "whatsapp_delete_message", "whatsapp_mark_as_read", "whatsapp_send_typing",
+  "whatsapp_get_messages", "whatsapp_get_chats",
+  // groups (12)
   "whatsapp_create_group", "whatsapp_get_group_info",
   "whatsapp_add_group_participants", "whatsapp_remove_group_participants",
-  "whatsapp_promote_group_participant", "whatsapp_demote_group_participant",
-  "whatsapp_update_group_subject", "whatsapp_update_group_description",
-  "whatsapp_leave_group", "whatsapp_get_invite_code",
-  "whatsapp_join_group_by_invite", "whatsapp_get_joined_groups",
-  // contacts
+  "whatsapp_promote_group_admin", "whatsapp_demote_group_admin",
+  "whatsapp_update_group_name", "whatsapp_update_group_description",
+  "whatsapp_get_group_invite_link", "whatsapp_join_group",
+  "whatsapp_leave_group", "whatsapp_get_joined_groups",
+  // contacts (7)
   "whatsapp_get_contacts", "whatsapp_get_contact_info",
-  "whatsapp_block_contact", "whatsapp_unblock_contact",
   "whatsapp_get_profile_picture", "whatsapp_get_status",
-  "whatsapp_check_number_exists",
-  // profile
-  "whatsapp_update_profile_name", "whatsapp_update_profile_status",
-  "whatsapp_update_profile_picture",
-  // status / stories
-  "whatsapp_send_text_status", "whatsapp_send_image_status",
-  // utility
+  "whatsapp_check_number", "whatsapp_block_contact", "whatsapp_unblock_contact",
+  // profile (4)
+  "whatsapp_get_my_info", "whatsapp_update_profile_name",
+  "whatsapp_update_profile_status", "whatsapp_update_profile_picture",
+  // status / stories (2)
+  "whatsapp_post_text_status", "whatsapp_post_image_status",
+  // utility (9)
   "whatsapp_get_connection_status", "whatsapp_get_qr_code", "whatsapp_logout",
+  "whatsapp_archive_chat", "whatsapp_mute_chat", "whatsapp_unmute_chat",
+  "whatsapp_pin_chat", "whatsapp_normalize_jid", "whatsapp_get_message_history",
 ];
 
 // ── Main export ───────────────────────────────────────────────────────────────
