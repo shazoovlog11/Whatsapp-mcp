@@ -1,0 +1,37 @@
+{
+  "_comment": "Copy the block for your client into its MCP config file. Replace <path> with the absolute path to this directory.",
+
+  "stdio": {
+    "_for": "Claude Desktop · Claude Code · Claude CLI · any stdio MCP client",
+    "mcpServers": {
+      "whatsapp": {
+        "command": "node",
+        "args": ["<path>/dist/index.js"],
+        "env": {
+          "AUTH_DIR": "<path>/auth_info_baileys",
+          "LOG_LEVEL": "warn",
+          "LOG_PRETTY": "false"
+        }
+      }
+    }
+  },
+
+  "sse": {
+    "_for": "Gemini CLI · legacy SSE-based MCP clients",
+    "mcpServers": {
+      "whatsapp": {
+        "url": "http://localhost:3000/sse"
+      }
+    }
+  },
+
+  "streamableHttp": {
+    "_for": "Codex CLI · modern MCP clients · custom bots · custom agents",
+    "mcpServers": {
+      "whatsapp": {
+        "url": "http://localhost:3000/mcp",
+        "transport": "http"
+      }
+    }
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "name": "whatsapp-mcp",
+  "version": "1.0.0",
+  "description": "WhatsApp MCP Server using Baileys - Bridge for LLM models",
+  "main": "dist/index.js",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "tsx src/index.ts",
+    "clean": "rm -rf dist auth_info_baileys"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "@whiskeysockets/baileys": "^6.7.0",
+    "pino": "^9.0.0",
+    "pino-pretty": "^11.0.0",
+    "qrcode-terminal": "^0.12.0",
+    "qrcode": "^1.5.3",
+    "sharp": "^0.33.0",
+    "zod": "^3.22.0",
+    "dotenv": "^16.0.0",
+    "node-cache": "^5.1.2",
+    "mime-types": "^2.1.35",
+    "axios": "^1.6.0",
+    "form-data": "^4.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/qrcode": "^1.5.5",
+    "@types/mime-types": "^2.1.4",
+    "typescript": "^5.0.0",
+    "tsx": "^4.0.0"
+  }
+}
