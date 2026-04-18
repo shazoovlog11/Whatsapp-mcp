@@ -21,7 +21,7 @@ Built with [Baileys](https://github.com/WhiskeySockets/Baileys) (no browser, no 
 
 ```bash
 # 1. Clone and install
-git clone https://github.com/your-username/whatsapp-mcp.git
+git clone https://github.com/Zaibipk/whatsapp-mcp.git
 cd whatsapp-mcp
 
 # 2. Install dependencies
