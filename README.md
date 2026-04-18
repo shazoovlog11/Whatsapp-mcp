@@ -5,7 +5,7 @@ A [Model Context Protocol](https://modelcontextprotocol.io) (MCP) server that gi
 Built with [Baileys](https://github.com/WhiskeySockets/Baileys) (no browser, no Puppeteer required).
 
 ---
-
+ 
 ## Features
 
 - **50 tools** covering messaging, groups, contacts, profile, and status
